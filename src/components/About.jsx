@@ -7,7 +7,9 @@ import axios from "axios"
 function Content() {
 
     const [users, setUsers] = useState([])
-    const [isLoading,setLoading] = useState(false)
+    const [searchItem, setSearchItem] = useState('')
+    const [isLoading, setLoading] = useState(false)
+    const [filteredUsers, setFilteredUsers] = useState(users)
 
     useEffect(() => {
         axios.get("https://jsonplaceholder.typicode.com/users")
@@ -16,19 +18,44 @@ function Content() {
                 setLoading(true)
             })
             .catch((error) => console.log(error.message))
-    }, [setUsers])
+    }, [])
+
+    const handleInputChange = (e) => {
+        const searchTerm = e.target.value
+        setSearchItem(searchTerm)
+
+        const filteredItems = users.filter((user) =>
+            user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        setFilteredUsers(filteredItems);
+    }
 
     return (
         <div className='col-start-2 col-span-5 rounded-md '>
-        {
-            isLoading == false && 
-            <div className="h-screen flex items-center justify-center">
-                <Hourglass />
+            {
+                isLoading == false &&
+                <div className="h-screen flex items-center justify-center">
+                    <Hourglass />
+                </div>
+            }
+            <div className="grid grid-cols-3 gap-2">
+                <div></div>
+                <div></div>
+                <div className="h-20 flex items-center justify-center">
+                    <input
+                        className="rounded-md py-2 shadow-lg shadow-slate-600 border border-gray-300 focus:outline-none px-2 text-lg text-gray-600"
+                        type="text"
+                        placeholder='Type to search'
+                        value={searchItem}
+                        onChange={handleInputChange}
+                    />
+                </div>
             </div>
-        }
             <div className='grid grid-cols-3 m-2 gap-2'>
+                {console.log(filteredUsers)}
                 {
-                    users.length > 0 && 
+                    users.length > 0 &&
                     users.map(user => {
                         return (
                             <div key={user.id} className='bg-white h-56 text-center rounded-md border border-gray-300 shadow-xl'>
